@@ -1,0 +1,11 @@
+# compiled output
+/build
+
+# dependencies
+/node_modules
+
+# IDE - VSCode
+.vscode/*
+
+# misc
+npm-debug.log
