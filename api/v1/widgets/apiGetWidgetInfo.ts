@@ -22,28 +22,41 @@ export const apiGetWidgetInfo: RequestHandler = (req, res, next) => {
   })
 
   Promise.all(promises)
-  .then(result => processResults(result));
+  .then(result => {
+    processResults(result);
+    res.json(widgetInfo);
+  });
 
   function processResults(result: any[]): void {
     result.forEach((body, i) => {
-      const $ = cheerio.load(body);
-      let text: string | undefined;
-      let url: string | undefined;
-      if (widgetData[i].type === WidgetCssType.titleSelf) {
+      widgetInfo.push(cheerioQuery(body, i));
+    });
+  }
+
+  function cheerioQuery(body: any, i: number): any {
+    const $ = cheerio.load(body);
+    let text: string | undefined;
+    let url: string | undefined;
+    switch (widgetData[i].type) {
+      case WidgetCssType.titleSelf:
         text = $(widgetData[i].css).first().attr('title')?.trim();
         url = $(widgetData[i].css).attr("href");
-      } else if (widgetData[i].type === WidgetCssType.firstParent) {
+      break;
+      case WidgetCssType.firstParent:
         text = $(widgetData[i].css).first().text().trim();
         url = $(widgetData[i].css).parent().attr("href");
-      } else {
+      break;
+      case WidgetCssType.firstChild:
+        text = $(widgetData[i].css).first().text().trim();
+        url = $(widgetData[i].css).children().first().attr("href");
+      break;
+      default:
         text = "";
         url = "";
-      }
-      widgetInfo.push({
-        text,
-        url
-      });
-    });
-    res.json(widgetInfo);
+    }
+    if (widgetData[i].preserve) {
+      url = `${widgetData[i].url}${url?.slice(widgetData[i].idx)}`;
+    }
+    return { text, url }
   }
 };
