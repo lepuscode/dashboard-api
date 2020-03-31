@@ -1,0 +1,63 @@
+{
+  "swaggerDoc": {
+    "swagger": "2.0",
+    "info": {
+      "description": "base path: https://url/api/v1",
+      "version": "1.0.0",
+      "title": "dashboard-api"
+    },
+    "tags": [
+      {
+        "name": "widgets",
+        "description": ""
+      }
+    ],
+    "schemes": [
+      "https"
+    ],
+    "paths": {
+      "/widgets": {
+        "get": {
+          "tags": [
+            "widgets"
+          ],
+          "summary": "Dashboard widgets",
+          "description": "",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "success",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Widget"
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid status value"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Widget": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "xml": {
+          "name": "Widget"
+        }
+      }
+    }
+  }
+}

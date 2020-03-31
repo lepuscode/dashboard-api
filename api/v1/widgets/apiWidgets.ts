@@ -1,12 +1,9 @@
 import { Router } from "express";
 
-import { apiGetWidget } from "./apiGetWidgets";
-import { apiGetWidgetInfo } from "./apiGetWidgetInfo";
+import { apiGetWidgets } from "./apiGetWidgets";
+import { apiGetWidgetNews } from "./apiGetWidgetNewsInfo";
 
 export const widgetRouter = Router();
 
-widgetRouter.route("/")
-  .get(apiGetWidget);
-
-widgetRouter.route("/:id")
-  .get(apiGetWidgetInfo);
+widgetRouter.route("/").get(apiGetWidgets);
+widgetRouter.route("/news").get(apiGetWidgetNews);
