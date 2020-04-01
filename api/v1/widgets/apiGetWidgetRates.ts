@@ -1,13 +1,16 @@
 import { RequestHandler } from "express";
 
-import fetch from 'node-fetch';
-import big from 'big.js';
+import fetch from "node-fetch";
+import moment from "moment";
+import big from "big.js";
 
-import { mockWidgetNewsInfo } from '../mock/mock';
 import { RatesModel, RateModel } from "../general/models/widgets.model";
 
 export const apiGetWidgetRates: RequestHandler = (req, res, next) => {
   const resObj: RatesModel = { rates: [], date: "" };
+
+  // const dateStart = moment().subtract(1, "day").format("YYYY-MM-DD");
+  // const dateEnd = moment().format("YYYY-MM-DD");
 
   const apiUrl = "https://api.exchangeratesapi.io/latest";
 

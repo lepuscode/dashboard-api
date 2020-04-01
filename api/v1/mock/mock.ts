@@ -2,8 +2,12 @@ import { WidgetNewsInfoModel, WidgetModel } from "../general/models/widgets.mode
 
 export const mockWidgets: WidgetModel[] = [
   {
-    id: "newsId",
+    id: "news",
     title: "News"
+  },
+  {
+    id: "rates",
+    title: "Exchange Rates - Fiat"
   }
 ]
 
