@@ -2,10 +2,10 @@
   "swaggerDoc": {
     "swagger": "2.0",
     "info": {
-      "description": "base path: https://url/api/v1",
       "version": "1.0.0",
       "title": "dashboard-api"
     },
+    "basePath": "/api/v1",
     "tags": [
       {
         "name": "widgets",
@@ -13,7 +13,8 @@
       }
     ],
     "schemes": [
-      "https"
+      "https",
+      "http"
     ],
     "paths": {
       "/widgets": {
@@ -41,6 +42,58 @@
             }
           }
         }
+      },
+      "/widgets/news": {
+        "get": {
+          "tags": [
+            "widgets"
+          ],
+          "summary": "News widget data",
+          "description": "Multiple status values can be provided with comma separated strings",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Link"
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid status value"
+            }
+          }
+        }
+      },
+      "/widgets/rates": {
+        "get": {
+          "tags": [
+            "widgets"
+          ],
+          "summary": "News widget data",
+          "description": "Multiple status values can be provided with comma separated strings",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Rates"
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid status value"
+            }
+          }
+        }
       }
     },
     "definitions": {
@@ -56,6 +109,42 @@
         },
         "xml": {
           "name": "Widget"
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "Rates": {
+        "type": "object",
+        "properties": {
+          "rates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Rate"
+            }
+          },
+          "date": {
+            "type": "string"
+          }
+        }
+      },
+      "Rate": {
+        "type": "object",
+        "properties": {
+          "fiat": {
+            "type": "string"
+          },
+          "brl": {
+            "type": "number"
+          }
         }
       }
     }

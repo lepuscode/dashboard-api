@@ -24,3 +24,13 @@ export interface LinkModel {
   label: string;
   url: string;
 }
+
+export interface RatesModel {
+  rates: RateModel[];
+  date: string;
+}
+
+export interface RateModel {
+  fiat: string;
+  brl: number;
+}
