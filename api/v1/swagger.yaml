@@ -1,0 +1,105 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "dashboard-api"
+host: "localhost:8091"
+basePath: "/api/v1"
+tags:
+- name: "widgets"
+schemes:
+- "https"
+- "http"
+paths:
+  /widgets:
+    get:
+      tags:
+      - "widgets"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: ""
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Widget"
+        400:
+          description: ""
+  /widgets/news:
+    get:
+      tags:
+      - "widgets"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: ""
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/News"
+        400:
+          description: ""
+  /widgets/rates:
+    get:
+      tags:
+      - "widgets"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "base"
+        in: "query"
+        description: "Fiat currency base (BRL, USD, EUR, ...)"
+        required: true
+        type: "string"
+        default: "BRL"
+      - name: "primary"
+        in: "query"
+        description: "Primary fiat currency"
+        type: "string"
+        default: "USD,EUR"
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: "#/definitions/Rates"
+        400:
+          description: ""
+definitions:
+  Widget:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      label:
+        type: "string"
+  News:
+    type: "object"
+    properties:
+      label:
+        type: "string"
+      url:
+        type: "string"
+  Rates:
+    type: "object"
+    properties:
+      base:
+        type: "string"
+      date:
+        type: "string"
+      primary:
+        type: "array"
+        items:
+          $ref: "#/definitions/Rate"
+      secondary:
+        type: "array"
+        items:
+          $ref: "#/definitions/Rate"
+  Rate:
+    type: "object"
+    properties:
+      fiat:
+        type: "string"
+      rate:
+        type: "number"

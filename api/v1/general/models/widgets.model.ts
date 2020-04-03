@@ -3,12 +3,29 @@ export interface WidgetModel {
   title: string;
 }
 
+export interface LinkModel {
+  label: string;
+  url: string;
+}
+
+export interface RatesModel {
+  base: string;
+  date: string;
+  primary: RateModel[];
+  secondary: RateModel[];
+}
+
+export interface RateModel {
+  fiat: string;
+  rate: number;
+}
+
 export interface WidgetNewsInfoModel {
   info: CheerioQueryModel[];
 }
 
-export interface WidgetNewsDataModel {
-  data: LinkModel[];
+export interface WidgetRatesInfoModel {
+  apiUrl: string;
 }
 
 export interface CheerioQueryModel {
@@ -18,19 +35,4 @@ export interface CheerioQueryModel {
   type: number;
   preserve: boolean;
   idx?: number;
-}
-
-export interface LinkModel {
-  label: string;
-  url: string;
-}
-
-export interface RatesModel {
-  rates: RateModel[];
-  date: string;
-}
-
-export interface RateModel {
-  fiat: string;
-  brl: number;
 }

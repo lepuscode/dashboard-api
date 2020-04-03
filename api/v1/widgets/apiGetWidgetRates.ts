@@ -1,41 +1,65 @@
 import { RequestHandler } from "express";
 
 import fetch from "node-fetch";
-import moment from "moment";
 import big from "big.js";
 
-import { RatesModel, RateModel } from "../general/models/widgets.model";
+import { WidgetRatesInfoModel, RatesModel, RateModel } from "../general/models/widgets.model";
+
+import { mockWidgetRatesInfo } from '../mock/mock';
 
 export const apiGetWidgetRates: RequestHandler = (req, res, next) => {
-  const resObj: RatesModel = { rates: [], date: "" };
+  console.log(req.query.base);
+  console.log(req.query.base.split(","));
 
-  // const dateStart = moment().subtract(1, "day").format("YYYY-MM-DD");
-  // const dateEnd = moment().format("YYYY-MM-DD");
+  if (!req.query.base || !req.query.primary) {
+    res.status(400).send();
+  }
+  const base = req.query.base;
+  const primary: string[] = req.query.primary.split(",");
 
-  const apiUrl = "https://api.exchangeratesapi.io/latest";
+  const widgetInfo: WidgetRatesInfoModel = mockWidgetRatesInfo; // get info from Redis/Mongo
 
-  fetch(apiUrl)
-  .then(res => res.json())
-  .then(json => {
-    processResponse(json);
-    res.json(resObj);
+  fetch(`${widgetInfo.apiUrl}?base=${base}`)
+  .then(latestRes => latestRes.json())
+  .then(latest => {
+    const rates: RatesModel = processLatest(latest);
+    res.json(rates);
   });
 
-  function processResponse(json: any): void {
-    resObj.date = json.date;
-    const EuroRates = Object.entries<number>(json.rates);
-    const eurBrlExchange = big(1).div(json.rates.BRL).toString();
-    EuroRates.forEach(([key, value]) => {
-      let eurToBrl = parseFloat(big(1).div(big(value).times(eurBrlExchange)).toFixed(4));
-      if (key === "BRL") {
-        key = "EUR";
-        eurToBrl = value
+  function processLatest(latest: any): RatesModel {
+    const calcRates: RatesModel = { base, date: latest.date, primary: [], secondary: [] };
+    const latestRates = Object.entries<any>(latest.rates);
+    latestRates.forEach(([fiat, rate]) => {
+      if (fiat === base) {
+        return;
       }
-      const rate: RateModel = {
-        fiat: key,
-        brl: eurToBrl
-      };
-      resObj.rates.push(rate);
+      if (primary.includes(fiat)) {
+        fiat === primary[0] ? calcRates.primary.unshift(processRate(fiat, rate)) : calcRates.primary.push(processRate(fiat, rate));
+      } else {
+        calcRates.secondary.push(processRate(fiat, rate));
+      }
     });
+    calcRates.secondary.sort(compare);
+    return calcRates;
+  }
+
+  function processRate(fiat: string, rate: number): RateModel {
+    const fiatRate: RateModel = {
+      fiat,
+      rate: parseFloat(big(1).div(rate).toFixed(4))
+    };
+    return fiatRate;
+  }
+
+  function compare(a: RateModel, b: RateModel) {
+    const fiatA = a.fiat;
+    const fiatB = b.fiat;
+    let comparison = 0;
+    if (fiatA > fiatB) {
+      comparison = 1;
+    } else if (fiatA < fiatB) {
+      comparison = -1;
+    }
+    return comparison;
   }
 };

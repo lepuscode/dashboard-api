@@ -2,14 +2,15 @@
   "swaggerDoc": {
     "swagger": "2.0",
     "info": {
+      "description": "",
       "version": "1.0.0",
       "title": "dashboard-api"
     },
+    "host": "localhost:8091",
     "basePath": "/api/v1",
     "tags": [
       {
-        "name": "widgets",
-        "description": ""
+        "name": "widgets"
       }
     ],
     "schemes": [
@@ -22,14 +23,12 @@
           "tags": [
             "widgets"
           ],
-          "summary": "Dashboard widgets",
-          "description": "",
           "produces": [
             "application/json"
           ],
           "responses": {
             "200": {
-              "description": "success",
+              "description": "",
               "schema": {
                 "type": "array",
                 "items": {
@@ -38,7 +37,7 @@
               }
             },
             "400": {
-              "description": "Invalid status value"
+              "description": ""
             }
           }
         }
@@ -48,23 +47,21 @@
           "tags": [
             "widgets"
           ],
-          "summary": "News widget data",
-          "description": "",
           "produces": [
             "application/json"
           ],
           "responses": {
             "200": {
-              "description": "successful operation",
+              "description": "",
               "schema": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/Link"
+                  "$ref": "#/definitions/News"
                 }
               }
             },
             "400": {
-              "description": "Invalid status value"
+              "description": ""
             }
           }
         }
@@ -74,23 +71,35 @@
           "tags": [
             "widgets"
           ],
-          "summary": "News widget data",
-          "description": "",
           "produces": [
             "application/json"
           ],
+          "parameters": [
+            {
+              "name": "base",
+              "in": "query",
+              "description": "Fiat currency base (BRL, USD, EUR, ...)",
+              "required": true,
+              "type": "string",
+              "default": "BRL"
+            },
+            {
+              "name": "primary",
+              "in": "query",
+              "description": "Primary fiat currency",
+              "type": "string",
+              "default": "USD,EUR"
+            }
+          ],
           "responses": {
             "200": {
-              "description": "successful operation",
+              "description": "",
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Rates"
-                }
+                "$ref": "#/definitions/Rates"
               }
             },
             "400": {
-              "description": "Invalid status value"
+              "description": ""
             }
           }
         }
@@ -103,15 +112,12 @@
           "id": {
             "type": "string"
           },
-          "title": {
+          "label": {
             "type": "string"
           }
-        },
-        "xml": {
-          "name": "Widget"
         }
       },
-      "Link": {
+      "News": {
         "type": "object",
         "properties": {
           "label": {
@@ -125,14 +131,23 @@
       "Rates": {
         "type": "object",
         "properties": {
-          "rates": {
+          "base": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "primary": {
             "type": "array",
             "items": {
               "$ref": "#/definitions/Rate"
             }
           },
-          "date": {
-            "type": "string"
+          "secondary": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Rate"
+            }
           }
         }
       },
@@ -142,7 +157,7 @@
           "fiat": {
             "type": "string"
           },
-          "brl": {
+          "rate": {
             "type": "number"
           }
         }

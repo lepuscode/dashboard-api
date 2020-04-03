@@ -4,50 +4,53 @@ import fetch from 'node-fetch';
 import cheerio from 'cheerio';
 
 import { WidgetCssType } from '../general/enums/widgets.enum';
+import { WidgetNewsInfoModel, CheerioQueryModel, LinkModel } from "../general/models/widgets.model";
 
 import { mockWidgetNewsInfo } from '../mock/mock';
-import { WidgetNewsInfoModel, WidgetNewsDataModel, LinkModel } from "../general/models/widgets.model";
 
 export const apiGetWidgetNews: RequestHandler = (req, res, next) => {
-  let fetchPromises: Promise<any>[] = [];
-  const resObj: WidgetNewsDataModel = { data: [] };
-  const widgetInfo: WidgetNewsInfoModel = mockWidgetNewsInfo; // get widgetId info from Redis/Mongo
+
+  const fetchPromises: Promise<any>[] = [];
+
+  const widgetInfo: WidgetNewsInfoModel = mockWidgetNewsInfo; // get info from Redis/Mongo
 
   widgetInfo.info.forEach((widget) => {
     fetchPromises.push(
       fetch(widget.url)
-      .then(res => res.text())
+      .then(response => response.text())
     );
   });
 
   Promise.all(fetchPromises)
   .then(result => {
-    processResults(result);
-    res.json(resObj);
+    const news = processResults(result);
+    res.json(news);
   });
 
-  function processResults(result: any[]): void {
+  function processResults(result: any[]): LinkModel[] {
+    const links: LinkModel[] = [];
     result.forEach((body, i) => {
-      resObj.data.push(cheerioQuery(body, i));
+      links.push(processBody(body, widgetInfo.info[i]));
     });
+    return links;
   }
 
-  function cheerioQuery(body: any, i: number): LinkModel {
+  function processBody(body: any, info: CheerioQueryModel): LinkModel {
     const $ = cheerio.load(body);
     let label: string | undefined;
     let url: string | undefined;
-    switch (widgetInfo.info[i].type) {
+    switch (info.type) {
       case WidgetCssType.titleSelf:
-        label = $(widgetInfo.info[i].css).first().attr('title')?.trim();
-        url = $(widgetInfo.info[i].css).attr("href");
+        label = $(info.css).first().attr('title')?.trim();
+        url = $(info.css).attr("href");
       break;
       case WidgetCssType.firstParent:
-        label = $(widgetInfo.info[i].css).first().text().trim();
-        url = $(widgetInfo.info[i].css).parent().attr("href");
+        label = $(info.css).first().text().trim();
+        url = $(info.css).parent().attr("href");
       break;
       case WidgetCssType.firstChild:
-        label = $(widgetInfo.info[i].css).first().text().trim();
-        url = $(widgetInfo.info[i].css).children().first().attr("href");
+        label = $(info.css).first().text().trim();
+        url = $(info.css).children().first().attr("href");
       break;
       default:
         label = "";
@@ -56,8 +59,8 @@ export const apiGetWidgetNews: RequestHandler = (req, res, next) => {
     if (label == undefined || url == undefined) {
       url = "";
       label = "";
-    } else if (widgetInfo.info[i].preserve) {
-      url = `${widgetInfo.info[i].url}${url?.slice(widgetInfo.info[i].idx)}`;
+    } else if (info.preserve) {
+      url = `${info.url}${url?.slice(info.idx)}`;
     }
     return { label, url }
   }
