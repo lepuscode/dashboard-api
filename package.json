@@ -9,7 +9,7 @@
   "dependencies": {
     "big.js": "^5.2.2",
     "cheerio": "^1.0.0-rc.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
     "swagger-ui-express": "^4.1.4",
